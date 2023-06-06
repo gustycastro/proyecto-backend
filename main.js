@@ -39,6 +39,7 @@ getProductsById(ID) {
 }
 }
 
+
 const producto = new ProductManager();
 
 //Productos cargados
