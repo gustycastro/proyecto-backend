@@ -1,36 +1,20 @@
 import express from 'express';
-import ProductManager from './ProductManager.js';
+import ProductManager from './manager/ProductManager.js';
+import productRouter from './routes/productRoutes.js';
+import CartManager from './manager/CartManager.js';
+import cartRouter from './routes/cartRoutes.js';
 
 const app = express();
-const productManager = new ProductManager('src/products.json');
 const PORT = 8080;
 
-app.get("/products", async (req, res) => {
-    const limit = parseInt(req.query.limit);
-    if (limit) {
-        try {
-            const products = await productManager.getProducts();
-            const limitedProducts = products.slice(0, limit); // Agregar límite acá
-            return res.status(200).json(limitedProducts); 
-        } catch (error) {
-            return res.status(404).json({ error: "Error al obtener los productos" });
-        }
-    } else {
-        const products = await productManager.getProducts();
-        return res.status(200).json(products);
-    }
-});
+app.use(express.json());
 
-app.get('/products/:pid', async (req, res) => {
-    try {
-        const productId = parseInt(req.params.pid);
-        const product = await productManager.getProductById(productId);
-        res.json(product);
-    } catch (error) {
-        res.status(404).json({ error: 'Error al obtener el producto' });
-    }
-});
+const productManager = new ProductManager('products.json');
+const cartManager = new CartManager('carts.json');
+
+app.use('/api/products', productRouter(productManager));
+app.use('/api/carts', cartRouter(cartManager));
 
 app.listen(PORT, () => {
-    console.log(`Servidor Express escuchando en el puerto ${PORT}`);
+  console.log(`Servidor Express escuchando en el puerto ${PORT}`);
 });
