@@ -1,5 +1,5 @@
 
-import { Router } from "express";
+import { Router } from 'express';
 
 const cartRouter = Router();
 
@@ -13,13 +13,17 @@ const cartRoutes = (cartManager) => {
     }
   });
 
-  cartRouter.get('/:cid', (req, res) => {
+  cartRouter.get('/:cid', async (req, res) => {
     const cartId = parseInt(req.params.cid);
-    const cart = cartManager.getCartById(cartId);
-    if (cart) {
-      return res.status(200).json(cart.products);
-    } else {
-      return res.status(404).json({ error: 'Carrito no encontrado' });
+    try {
+      const cart = await cartManager.getCartById(cartId);
+      if (cart) {
+        return res.status(200).json(cart.products);
+      } else {
+        return res.status(404).json({ error: 'Carrito no encontrado' });
+      }
+    } catch (error) {
+      return res.status(500).json({ error: 'Error al obtener el carrito' });
     }
   });
 
@@ -43,3 +47,4 @@ const cartRoutes = (cartManager) => {
 };
 
 export default cartRoutes;
+

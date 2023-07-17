@@ -1,10 +1,10 @@
 import fs from 'fs';
 
 class CartManager {
-    constructor(path) {
-        this.path = path;
-        this.carts = [];
-        this.loadCarts();
+  constructor(path) {
+    this.path = path;
+    this.carts = [];
+    this.loadCarts();
   }
 
   async loadCarts() {
@@ -29,22 +29,24 @@ class CartManager {
     return this.carts.length > 0 ? this.carts[this.carts.length - 1].id + 1 : 1;
   }
 
-  createCart() {
+  async createCart() {
     const id = this.generateId();
     const newCart = { id, products: [] };
     this.carts.push(newCart);
+    await this.saveCarts();
     return id;
   }
 
-  getCartById(id) {
-    const cart = this.carts.find(c => c.id === id);
+  async getCartById(id) {
+    await this.loadCarts();
+    const cart = this.carts.find((c) => c.id === id);
     return cart ? cart : null;
   }
 
   async updateCart(id, productId, quantity) {
-    const cart = this.getCartById(id);
+    const cart = await this.getCartById(id);
     if (cart) {
-      const existingProduct = cart.products.find(p => p.product === productId);
+      const existingProduct = cart.products.find((p) => p.product === productId);
       if (existingProduct) {
         existingProduct.quantity += quantity;
       } else {
@@ -59,3 +61,4 @@ class CartManager {
 }
 
 export default CartManager;
+

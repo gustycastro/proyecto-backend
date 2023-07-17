@@ -43,6 +43,9 @@ const productRoutes = (productManager) => {
   productRouter.put('/:pid', async (req, res) => {
     const productId = parseInt(req.params.pid);
     const updatedFields = req.body;
+    if (updatedFields.id !== undefined) {
+      return res.status(400).json({ error: 'No se permite actualizar el ID del producto' });
+    }
     try {
       const result = await productManager.updateProduct(productId, updatedFields);
       return res.status(200).json({ message: result });
